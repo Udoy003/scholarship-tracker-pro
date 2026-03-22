@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scholarship Tracker Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="data.js"></script>
     <style>
         :root {
             /* Nano Banana Theme */
@@ -248,56 +248,30 @@
         let uniSpecific = [];
         let scholSpecific = [];
         let currentView = 'uni'; // Track which view is active
-        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1ywGs9C0x7RnyGNe6NU5pgvUGfiGIrtW4UiVcuBP81U4/gviz/tq?tqx=out:csv';
 
-        async function initData() {
-            Papa.parse(SHEET_CSV_URL, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    const data = results.data;
-                    data.forEach(row => {
-                        let s = {};
-                        s.name = row['Scholarship/Program Name'] || 'Unknown Program';
-                        s.university = row['University Name'] || 'Unknown University';
-                        s.country = row['Country'] || '';
-                        s.degree = row['Degree Level'] || '';
-                        s.priority = row['Priority'] || 'Low';
-                        s.match = parseInt(row['Program Match (%)']) || 0;
-                        s.field = row['Field of Study / Department'] || '';
-                        s.deadline = row['Application Deadline'] || 'TBD';
-                        s.funding = row['Funding Type'] || '';
-                        s.assistantship = row['Assistantship'] || '';
-                        s.eligibility = row['Eligibility & Requirements'] || '';
-                        s.notes = row['Comment'] || '';
-                        s.link = row['Application Link'] || '#';
-                        s.benefits = row['Benefits Details'] || '';
-                        s.competition = row['Scholarship Competition'] || '';
+        function initData() {
+            scholarships.forEach(s => {
+                const nameLower = s.name.toLowerCase();
+                const uniLower = s.university.toLowerCase();
+                
+                s.isIot = isIot(s);
+                s.dlTime = parseDeadline(s.deadline);
+                s.prioScore = getPriorityScore(s.priority);
 
-                        const nameLower = s.name.toLowerCase();
-                        const uniLower = s.university.toLowerCase();
-                        
-                        s.isIot = isIot(s);
-                        s.dlTime = parseDeadline(s.deadline);
-                        s.prioScore = getPriorityScore(s.priority);
-
-                        if (uniLower.includes('consortium') || nameLower.includes('erasmus') || nameLower.includes('mext') || 
-                            nameLower.includes('gks') || nameLower.includes('fulbright') || nameLower.includes('chevening') || 
-                            nameLower.includes('csc') || nameLower.includes('koica') || nameLower.includes('daad') || 
-                            nameLower.includes('commonwealth') || nameLower.includes('adb') || nameLower.includes('emai')) {
-                            s.category = 'schol';
-                            scholSpecific.push(s);
-                        } else {
-                            s.category = 'uni';
-                            uniSpecific.push(s);
-                        }
-                    });
-
-                    // Trigger the render
-                    applySorting();
+                if (uniLower.includes('consortium') || nameLower.includes('erasmus') || nameLower.includes('mext') || 
+                    nameLower.includes('gks') || nameLower.includes('fulbright') || nameLower.includes('chevening') || 
+                    nameLower.includes('csc') || nameLower.includes('koica') || nameLower.includes('daad') || 
+                    nameLower.includes('commonwealth') || nameLower.includes('adb') || nameLower.includes('emai')) {
+                    s.category = 'schol';
+                    scholSpecific.push(s);
+                } else {
+                    s.category = 'uni';
+                    uniSpecific.push(s);
                 }
             });
+
+            // Trigger the render
+            applySorting();
         }
 
         function isIot(s) {
@@ -346,28 +320,28 @@
             const uniTbody = document.getElementById('uni-tbody');
             uniTbody.innerHTML = '';
             uniSpecific.forEach(s => {
-                uniTbody.innerHTML += \`
+                uniTbody.innerHTML += `
                     <tr>
                         <td>
-                            <div style="font-weight: 700; color: #fff; margin-bottom: 4px; font-family:'Outfit' ,sans-serif; font-size: 1.1rem;">\${s.university}</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted)">\${s.country}</div>
+                            <div style="font-weight: 700; color: #fff; margin-bottom: 4px; font-family:'Outfit' ,sans-serif; font-size: 1.1rem;">${s.university}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted)">${s.country}</div>
                         </td>
-                        <td><span class="priority-badge badge-\${s.priority}">\${s.priority}</span></td>
-                        <td class="\${s.isIot ? 'iot-glow' : ''}" style="font-weight: 600;">\${s.field}</td>
+                        <td><span class="priority-badge badge-${s.priority}">${s.priority}</span></td>
+                        <td class="${s.isIot ? 'iot-glow' : ''}" style="font-weight: 600;">${s.field}</td>
                         <td>
-                             <div class="match-circle" style="width: 38px; height: 38px; --p: \${s.match}%; background: conic-gradient(var(--accent-yellow) var(--p), rgba(255,255,255,0.05) 0); font-size: 0.8rem;">
-                                <span>\${s.match}%</span>
+                             <div class="match-circle" style="width: 38px; height: 38px; --p: ${s.match}%; background: conic-gradient(var(--accent-yellow) var(--p), rgba(255,255,255,0.05) 0); font-size: 0.8rem;">
+                                <span>${s.match}%</span>
                             </div>
                         </td>
                         <td>
-                            <div style="color: var(--accent-yellow); font-weight: 600; margin-bottom: 4px;">\${s.funding}</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted)">Assist: \${s.assistantship}</div>
+                            <div style="color: var(--accent-yellow); font-weight: 600; margin-bottom: 4px;">${s.funding}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted)">Assist: ${s.assistantship}</div>
                         </td>
-                        <td><div class="raw-text" title="\${s.eligibility}">\${s.eligibility}</div></td>
-                        <td style="color: var(--text-main); font-weight: 600; white-space: nowrap;">\${s.deadline}</td>
-                        <td><a href="\${s.link}" target="_blank" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Visit</a></td>
+                        <td><div class="raw-text" title="${s.eligibility}">${s.eligibility}</div></td>
+                        <td style="color: var(--text-main); font-weight: 600; white-space: nowrap;">${s.deadline}</td>
+                        <td><a href="${s.link}" target="_blank" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Visit</a></td>
                     </tr>
-                \`;
+                `;
             });
         }
 
@@ -375,34 +349,34 @@
             const scholGrid = document.getElementById('schol-grid');
             scholGrid.innerHTML = '';
             scholSpecific.forEach((s, i) => {
-                scholGrid.innerHTML += \`
-                    <div class="card" style="animation-delay: \${i * 0.05}s">
+                scholGrid.innerHTML += `
+                    <div class="card" style="animation-delay: ${i * 0.05}s">
                         <div class="card-header">
-                            <span class="priority-badge badge-\${s.priority}">\${s.priority} Priority</span>
-                            <div class="match-circle" style="--p: \${s.match}%;">
-                                <span>\${s.match}%</span>
+                            <span class="priority-badge badge-${s.priority}">${s.priority} Priority</span>
+                            <div class="match-circle" style="--p: ${s.match}%;">
+                                <span>${s.match}%</span>
                             </div>
                         </div>
-                        <h3 class="card-title">\${s.name}</h3>
-                        <div class="card-uni">🌍 \${s.university}, \${s.country}</div>
+                        <h3 class="card-title">${s.name}</h3>
+                        <div class="card-uni">🌍 ${s.university}, ${s.country}</div>
                         <div class="data-row">
                             <span class="data-label">Field of Study</span>
-                            <span class="data-value \${s.isIot ? 'iot-glow' : ''}">\${s.field}</span>
+                            <span class="data-value ${s.isIot ? 'iot-glow' : ''}">${s.field}</span>
                         </div>
                         <div class="data-row">
                             <span class="data-label">Funding Type</span>
-                            <span class="data-value" style="color:var(--accent-yellow)">\${s.funding}</span>
+                            <span class="data-value" style="color:var(--accent-yellow)">${s.funding}</span>
                         </div>
                         <div class="data-row">
                             <span class="data-label">Deadline</span>
-                            <span class="data-value" style="color:#fff">\${s.deadline}</span>
+                            <span class="data-value" style="color:#fff">${s.deadline}</span>
                         </div>
                         <div class="card-actions">
-                            <button class="btn btn-secondary" style="flex:1" onclick="openModal(\${i}, 'schol')">View Data</button>
-                            <a href="\${s.link}" target="_blank" class="btn btn-primary" style="flex: 1;">Apply ↗</a>
+                            <button class="btn btn-secondary" style="flex:1" onclick="openModal(${i}, 'schol')">View Data</button>
+                            <a href="${s.link}" target="_blank" class="btn btn-primary" style="flex: 1;">Apply ↗</a>
                         </div>
                     </div>
-                \`;
+                `;
             });
         }
 
@@ -421,43 +395,43 @@
             const s = category === 'schol' ? scholSpecific[index] : uniSpecific[index];
             
             document.getElementById('modal-title').innerText = s.name;
-            document.getElementById('modal-subtitle').innerText = \`\${s.university}, \${s.country}\`;
+            document.getElementById('modal-subtitle').innerText = `${s.university}, ${s.country}`;
             
-            document.getElementById('modal-badges').innerHTML = \`
-                <span class="priority-badge" style="background:var(--accent-yellow); color:#111; border:none">\${s.priority} Match (\${s.match}%)</span>
-                \${s.isIot ? '<span class="priority-badge" style="background:#111; color:var(--accent-yellow); border:1px solid var(--accent-yellow)">IoT Focused</span>' : ''}
-            \`;
+            document.getElementById('modal-badges').innerHTML = `
+                <span class="priority-badge" style="background:var(--accent-yellow); color:#111; border:none">${s.priority} Match (${s.match}%)</span>
+                ${s.isIot ? '<span class="priority-badge" style="background:#111; color:var(--accent-yellow); border:1px solid var(--accent-yellow)">IoT Focused</span>' : ''}
+            `;
 
             let ieltsInfo = s.eligibility.toLowerCase().includes('ielts') || s.eligibility.toLowerCase().includes('english') ? 'Required (Check score)' : 'Not mentioned';
 
-            document.getElementById('modal-body').innerHTML = \`
+            document.getElementById('modal-body').innerHTML = `
                 <div class="detail-section">
                     <h4>Overview</h4>
-                    <div class="row-item"><label>Degree Level</label><div>\${s.degree}</div></div>
-                    <div class="row-item"><label>Field of Study</label><div class="\${s.isIot ? 'iot-glow' : ''}">\${s.field}</div></div>
-                    <div class="row-item"><label>Competition</label><div>\${s.competition}</div></div>
+                    <div class="row-item"><label>Degree Level</label><div>${s.degree}</div></div>
+                    <div class="row-item"><label>Field of Study</label><div class="${s.isIot ? 'iot-glow' : ''}">${s.field}</div></div>
+                    <div class="row-item"><label>Competition</label><div>${s.competition}</div></div>
                 </div>
                 
                 <div class="detail-section">
                     <h4>Funding Breakdown</h4>
-                    <div class="row-item"><label>Core Funding</label><div style="color:var(--accent-yellow)">\${s.funding}</div></div>
-                    <div class="row-item"><label>Benefits</label><div>\${s.benefits}</div></div>
-                    <div class="row-item"><label>Assistantship Needed</label><div>\${s.assistantship}</div></div>
+                    <div class="row-item"><label>Core Funding</label><div style="color:var(--accent-yellow)">${s.funding}</div></div>
+                    <div class="row-item"><label>Benefits</label><div>${s.benefits}</div></div>
+                    <div class="row-item"><label>Assistantship Needed</label><div>${s.assistantship}</div></div>
                 </div>
 
                 <div class="detail-section">
                     <h4>Application Metrics</h4>
-                    <div class="row-item"><label>Deadline</label><div style="color:#fff">\${s.deadline}</div></div>
-                    <div class="row-item"><label>Eligibility Outline</label><div>\${s.eligibility}</div></div>
-                    <div class="row-item"><label>IELTS/GRE Status</label><div>\${ieltsInfo}</div></div>
+                    <div class="row-item"><label>Deadline</label><div style="color:#fff">${s.deadline}</div></div>
+                    <div class="row-item"><label>Eligibility Outline</label><div>${s.eligibility}</div></div>
+                    <div class="row-item"><label>IELTS/GRE Status</label><div>${ieltsInfo}</div></div>
                 </div>
 
                 <div class="detail-section">
                     <h4>Notes & Strategy</h4>
-                    <div class="row-item"><label>Internal Notes</label><div>\${s.notes || 'No custom notes.'}</div></div>
-                    <div class="row-item"><label>Professor Contact</label><div>\${s.assistantship === 'RA' ? 'You MUST email professors early for Labs.' : 'Usually centralized application.'}</div></div>
+                    <div class="row-item"><label>Internal Notes</label><div>${s.notes || 'No custom notes.'}</div></div>
+                    <div class="row-item"><label>Professor Contact</label><div>${s.assistantship === 'RA' ? 'You MUST email professors early for Labs.' : 'Usually centralized application.'}</div></div>
                 </div>
-            \`;
+            `;
 
             document.getElementById('modal').classList.add('active');
         }
