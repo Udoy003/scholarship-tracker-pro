@@ -8,141 +8,204 @@
     <script src="data.js"></script>
     <style>
         :root {
-            --bg-dark: #070b19;
-            --glass-bg: rgba(20, 25, 50, 0.4);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-glow: rgba(139, 92, 246, 0.2);
+            /* Nano Banana Theme */
+            --bg-dark: #0f0f0f;
+            --glass-bg: rgba(26, 26, 26, 0.6);
+            --glass-border: rgba(250, 204, 21, 0.15); /* Banana yellow border */
+            --glass-glow: rgba(250, 204, 21, 0.12); /* Banana glow */
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-purple: #8b5cf6;
-            --accent-cyan: #06b6d4;
-            --top-match: #ef4444;
-            --high-match: #eab308;
-            --med-match: #22c55e;
-            --low-match: #64748b;
+            --text-muted: #a1a1aa; /* Light grayish-yellow tint */
+            --accent-yellow: #facc15; /* Banana main */
+            --accent-gold: #eab308;   /* Banana dark */
+            
+            --top-match: #facc15; /* Top is banana */
+            --high-match: #fef08a; /* High is pale yellow */
+            --med-match: #bef264; /* Medium is lime/yellowish */
+            --low-match: #71717a; /* Low is gray */
+            
+            --modal-bg: #18181b;
         }
 
         body {
             margin: 0; padding: 0; background: var(--bg-dark);
             background-image:
-                radial-gradient(at 0% 0%, hsla(253,16%,15%,1) 0, transparent 40%),
-                radial-gradient(at 80% 0%, hsla(225,39%,20%,0.4) 0, transparent 50%),
-                radial-gradient(at 100% 100%, hsla(339,49%,20%,0.4) 0, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(30, 30, 30, 1) 0, transparent 40%),
+                radial-gradient(at 80% 0%, rgba(250, 204, 21, 0.05) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(250, 204, 21, 0.05) 0, transparent 50%);
             background-attachment: fixed; color: var(--text-main); font-family: 'Inter', sans-serif;
             min-height: 100vh; overflow-x: hidden;
+            scrollbar-width: thin; scrollbar-color: var(--accent-gold) var(--bg-dark);
         }
 
         header {
             padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--glass-border); background: rgba(7, 11, 25, 0.7);
+            border-bottom: 1px solid var(--glass-border); background: rgba(15, 15, 15, 0.8);
             backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100;
         }
 
         h1 {
             font-family: 'Outfit', sans-serif; font-size: 2.2rem; font-weight: 800; margin: 0;
-            background: linear-gradient(135deg, #fff, text-main); -webkit-background-clip: text;
+            background: linear-gradient(135deg, #fff, var(--text-muted)); -webkit-background-clip: text;
         }
         h1 span {
-            background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple));
+            background: linear-gradient(to right, var(--accent-yellow), var(--accent-gold));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
+        .controls { display: flex; align-items: center; gap: 1.5rem; }
+        
+        /* Sorting Dropdown */
+        .sort-control {
+            display: flex; align-items: center; gap: 0.8rem; background: rgba(0,0,0,0.3);
+            padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--glass-border);
+        }
+        .sort-control label { font-family: 'Outfit'; font-weight: 600; font-size: 0.9rem; color: var(--accent-yellow); text-transform: uppercase; letter-spacing: 0.5px;}
+        select {
+            background: transparent; color: white; border: none; font-family: 'Inter'; font-weight: 500; font-size: 0.95rem; outline: none; cursor: pointer;
+        }
+        select option { background: var(--modal-bg); color: white; }
+
         /* Main Route Tabs */
         .route-tabs {
-            display: flex; gap: 1rem; margin: 3rem 4rem 2rem 4rem; border-bottom: 2px solid rgba(255,255,255,0.05); padding-bottom: 1rem;
+            display: flex; gap: 1rem; margin: 3rem 4rem 1.5rem 4rem; border-bottom: 2px solid rgba(255,255,255,0.05); padding-bottom: 1rem;
         }
         .route-btn {
             background: none; border: none; color: var(--text-muted); font-family: 'Outfit'; font-size: 1.5rem;
             font-weight: 700; cursor: pointer; transition: all 0.3s ease; padding: 0.5rem 1rem; position: relative;
         }
         .route-btn:hover { color: #fff; }
-        .route-btn.active { color: #fff; }
+        .route-btn.active { color: var(--accent-yellow); }
         .route-btn.active::after {
             content: ''; position: absolute; bottom: -1rem; left: 0; right: 0; height: 3px;
-            background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple)); border-radius: 3px 3px 0 0;
+            background: linear-gradient(to right, var(--accent-yellow), var(--accent-gold)); border-radius: 3px 3px 0 0;
+            box-shadow: 0 -2px 10px var(--glass-glow);
         }
 
         main { padding: 0 4rem 4rem 4rem; }
 
-        /* General UI */
-        .iot-glow { color: #d8b4fe; text-shadow: 0 0 10px rgba(168, 85, 247, 0.6); font-weight: 700; }
+        /* General UI Elements */
+        .iot-glow { color: #facc15; text-shadow: 0 0 10px rgba(250, 204, 21, 0.4); font-weight: 700; }
         .priority-badge { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; padding: 0.5rem 1rem; border-radius: 999px; letter-spacing: 0.5px; }
-        .badge-Top { color: #fca5a5; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); }
-        .badge-High { color: #fde047; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.3); }
-        .badge-Medium { color: #86efac; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); }
-        .badge-Low { color: #cbd5e1; background: rgba(255,255,255, 0.1); border: 1px solid rgba(255,255,255, 0.2); }
+        
+        .badge-Top { color: #fef08a; background: rgba(250, 204, 21, 0.2); border: 1px solid rgba(250, 204, 21, 0.4); }
+        .badge-High { color: #fef08a; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.3); }
+        .badge-Medium { color: #bef264; background: rgba(163, 230, 53, 0.15); border: 1px solid rgba(163, 230, 53, 0.3); }
+        .badge-Low { color: #a1a1aa; background: rgba(255,255,255, 0.05); border: 1px solid rgba(255,255,255, 0.1); }
 
-        .btn-primary { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 0.9rem;}
-        .btn-primary:hover { box-shadow: 0 0 15px rgba(139, 92, 246, 0.4); transform: translateY(-2px); }
+        .btn { padding: 0.8rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 0.9rem; text-align: center; border: none; transition: 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, var(--accent-yellow), var(--accent-gold)); color: #111; font-weight: 800;}
+        .btn-primary:hover { box-shadow: 0 0 20px var(--glass-glow); transform: translateY(-2px); filter: brightness(1.1);}
+        .btn-secondary { background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: var(--accent-yellow); color: var(--accent-yellow); }
 
         /* VIEW 1: SCHOLARSHIP SPECIFIC (CARDS) */
         #schol-view { display: none; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 2.5rem; }
         .card {
             background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 2rem; position: relative;
-            backdrop-filter: blur(16px); transition: all 0.4s ease; display: flex; flex-direction: column;
+            backdrop-filter: blur(16px); transition: all 0.4s ease; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .card:hover { transform: translateY(-8px); border-color: rgba(255, 255, 255, 0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px var(--glass-glow); }
+        .card:hover { transform: translateY(-8px); border-color: var(--accent-yellow); box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 20px var(--glass-glow); }
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+        
         .match-circle {
             width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            background: conic-gradient(var(--accent-cyan) var(--p), rgba(255,255,255,0.05) 0); position: relative; font-family: 'Outfit'; font-weight:800; font-size: 1.1rem;
+            background: conic-gradient(var(--accent-yellow) var(--p), rgba(255,255,255,0.05) 0); position: relative; font-family: 'Outfit'; font-weight:800; font-size: 1.1rem; color: #fff;
         }
-        .match-circle::before { content: ''; position: absolute; inset: 4px; background: var(--bg-dark); border-radius: 50%; }
+        .match-circle::before { content: ''; position: absolute; inset: 4px; background: var(--bg-dark); border-radius: 50%; box-shadow: inset 0 0 5px rgba(0,0,0,0.5);}
         .match-circle span { position: relative; z-index: 1;}
+        
         .card-title { font-family: 'Outfit'; font-size: 1.5rem; font-weight: 700; margin: 0 0 0.5rem 0; line-height: 1.3; }
         .card-uni { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; }
         .data-row { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
         .data-label { color: var(--text-muted); }
-        .data-value { font-weight: 500; text-align: right; max-width: 60%; line-height: 1.4; }
+        .data-value { font-weight: 500; text-align: right; max-width: 65%; line-height: 1.4; color: #ddd; }
         .card-actions { margin-top: 1.5rem; display: flex; gap: 1rem; }
 
         /* VIEW 2: UNIVERSITY SPECIFIC (RAW TABLE) */
         #uni-view { display: none; }
         .table-container {
             width: 100%; overflow-x: auto; background: var(--glass-bg); border: 1px solid var(--glass-border);
-            border-radius: 16px; backdrop-filter: blur(16px);
+            border-radius: 16px; backdrop-filter: blur(16px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
         th { 
-            background: rgba(0,0,0,0.3); padding: 1.2rem 1.5rem; font-weight: 600; color: var(--text-muted); 
+            background: rgba(0,0,0,0.5); padding: 1.5rem; font-weight: 700; color: var(--accent-yellow); 
             text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8rem; border-bottom: 1px solid var(--glass-border);
-            white-space: nowrap;
+            white-space: nowrap; font-family: 'Outfit';
         }
-        td { padding: 1.2rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+        td { padding: 1.2rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; color: #ccc;}
         tr:last-child td { border-bottom: none; }
-        tr:hover td { background: rgba(255,255,255,0.03); }
+        tr:hover td { background: rgba(250, 204, 21, 0.05); }
 
-        .th-sort { cursor: pointer; }
-        .th-sort:hover { color: #fff; }
-        
         .raw-text { color: var(--text-muted); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+            z-index: 1000; display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content {
+            background: var(--modal-bg); border: 1px solid var(--glass-border); border-radius: 20px;
+            width: 90%; max-width: 900px; max-height: 85vh; overflow-y: auto; padding: 3rem;
+            position: relative; box-shadow: 0 25px 50px -12px rgba(250, 204, 21, 0.2);
+            transform: translateY(20px); transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .close-btn {
+            position: absolute; top: 1.5rem; right: 2rem; background: none; border: none;
+            color: var(--text-muted); font-size: 2rem; cursor: pointer; transition: 0.2s;
+        }
+        .close-btn:hover { color: var(--accent-yellow); transform: rotate(90deg); }
+
+        .modal-header { border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 2rem; margin-bottom: 2rem; }
+        .modal-header h2 { font-family: 'Outfit'; font-size: 2.2rem; margin: 0 0 0.5rem 0; color: #fff;}
+        .modal-header p { color: var(--text-muted); font-weight: 500; font-size: 1.1rem; margin: 0; }
+
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .detail-section { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.05); }
+        .detail-section h4 { color: var(--accent-yellow); margin: 0 0 1.5rem 0; font-family: 'Outfit'; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+        .detail-section h4::before { content: ''; display: block; width: 4px; height: 18px; background: var(--accent-yellow); border-radius: 4px; }
+        
+        .row-item { margin-bottom: 1.2rem; }
+        .row-item label { display: block; color: #888; font-size: 0.8rem; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.5px;}
+        .row-item div { font-weight: 500; line-height: 1.6; color: #e4e4e7; }
 
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Base State */
         .active-view { display: block !important; animation: fadeUp 0.4s ease backwards; }
-
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Scholarship<span>Finder Pro</span></h1>
-        <div><a href="https://docs.google.com/spreadsheets/d/1ywGs9C0x7RnyGNe6NU5pgvUGfiGIrtW4UiVcuBP81U4/edit" target="_blank" class="btn-primary" style="background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);">Google Sheet ↗</a></div>
+        <h1>Scholarship<span>Tracker Nano</span></h1>
+        <div class="controls">
+            <div class="sort-control">
+                <label for="sort-select">Sort By:</label>
+                <select id="sort-select" onchange="applySorting()">
+                    <option value="match-desc">Match % (Highest)</option>
+                    <option value="deadline-asc">Deadline (Soonest)</option>
+                    <option value="iot-first">IoT Focus (First)</option>
+                    <option value="priority-desc">Priority</option>
+                </select>
+            </div>
+            <a href="https://docs.google.com/spreadsheets/d/1ywGs9C0x7RnyGNe6NU5pgvUGfiGIrtW4UiVcuBP81U4/edit" target="_blank" class="btn btn-primary" style="padding: 0.6rem 1rem;">View Google Sheet ↗</a>
+        </div>
     </header>
 
     <div class="route-tabs">
-        <button class="route-btn active" onclick="switchTab('uni')">🏛️ University Specific</button>
-        <button class="route-btn" onclick="switchTab('schol')">🏆 Scholarship Specific</button>
+        <button class="route-btn active" id="tab-uni" onclick="switchTab('uni')">🏛️ University Specific</button>
+        <button class="route-btn" id="tab-schol" onclick="switchTab('schol')">🏆 Scholarship Specific</button>
     </div>
 
     <main>
         
-        <!-- UNIVERSITY SPECIFIC (RAW DATA TABLE) -->
         <div id="uni-view" class="active-view">
             <div class="table-container">
                 <table>
@@ -151,122 +214,230 @@
                             <th>University</th>
                             <th>Priority</th>
                             <th>Field of Study</th>
-                            <th>Degree</th>
-                            <th>Funding & Assistantship</th>
+                            <th>Match</th>
+                            <th>Funding & Assist</th>
                             <th>Eligibility Details</th>
                             <th>Deadline</th>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="uni-tbody">
-                        <!-- Table Rows Injected Here -->
-                    </tbody>
+                    <tbody id="uni-tbody"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- SCHOLARSHIP SPECIFIC (PREMIUM CARDS) -->
         <div id="schol-view">
-            <div class="grid" id="schol-grid">
-                <!-- Cards Injected Here -->
-            </div>
+            <div class="grid" id="schol-grid"></div>
         </div>
 
     </main>
 
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div class="modal-header">
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;" id="modal-badges"></div>
+                <h2 id="modal-title">Name</h2>
+                <p id="modal-subtitle">Uni, Country</p>
+            </div>
+            <div class="detail-grid" id="modal-body"></div>
+        </div>
+    </div>
+
     <script>
-        // Categorize Data
         let uniSpecific = [];
         let scholSpecific = [];
+        let currentView = 'uni'; // Track which view is active
 
+        function isIot(s) {
+            return s.field.toLowerCase().includes('iot') || s.field.toLowerCase().includes('embedded') || s.name.toLowerCase().includes('iot');
+        }
+
+        // Parse Deadlines into timestamps for sorting
+        function parseDeadline(dl) {
+            if (!dl || dl.toLowerCase() === 'tbd' || dl.toLowerCase() === 'rolling') return Infinity;
+            // Attempt standard parse
+            let ms = Date.parse(dl);
+            if (!isNaN(ms)) return ms;
+            // Fallbacks for rough months/years like "Early 2026", "Spring 2025"
+            if (dl.includes("2025")) return new Date("Dec 31, 2025").getTime();
+            if (dl.includes("2026")) return new Date("Dec 31, 2026").getTime();
+            return Infinity;
+        }
+
+        function getPriorityScore(p) {
+            if(p === "Top") return 3;
+            if(p === "High") return 2;
+            if(p === "Medium") return 1;
+            return 0; // Low
+        }
+
+        // Initialize Categories
         scholarships.forEach(s => {
             const nameLower = s.name.toLowerCase();
             const uniLower = s.university.toLowerCase();
             
-            // Check if it's a major scholarship fund/government/consortium
+            s.isIot = isIot(s);
+            s.dlTime = parseDeadline(s.deadline);
+            s.prioScore = getPriorityScore(s.priority);
+
             if (uniLower.includes('consortium') || nameLower.includes('erasmus') || nameLower.includes('mext') || 
                 nameLower.includes('gks') || nameLower.includes('fulbright') || nameLower.includes('chevening') || 
                 nameLower.includes('csc') || nameLower.includes('koica') || nameLower.includes('daad') || 
                 nameLower.includes('commonwealth') || nameLower.includes('adb') || nameLower.includes('emai')) {
+                s.category = 'schol';
                 scholSpecific.push(s);
             } else {
+                s.category = 'uni';
                 uniSpecific.push(s);
             }
         });
 
-        // 1. Render University Specific Raw Table
-        const uniTbody = document.getElementById('uni-tbody');
-        uniSpecific.forEach(s => {
-            const isIot = s.field.toLowerCase().includes('iot') || s.field.toLowerCase().includes('embedded') || s.name.toLowerCase().includes('iot');
-            uniTbody.innerHTML += `
-                <tr>
-                    <td>
-                        <div style="font-weight: 600; color: #fff; margin-bottom: 4px;">${s.university}</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted)">${s.country}</div>
-                    </td>
-                    <td><span class="priority-badge badge-${s.priority}">${s.priority}</span></td>
-                    <td class="${isIot ? 'iot-glow' : ''}" style="font-weight: 500">${s.field}</td>
-                    <td style="color: var(--text-muted)">${s.degree}</td>
-                    <td>
-                        <div style="color: var(--med-match); font-weight: 600; margin-bottom: 4px;">${s.funding}</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted)">Assist: ${s.assistantship}</div>
-                    </td>
-                    <td><div class="raw-text" title="${s.eligibility}">${s.eligibility}</div></td>
-                    <td style="color: var(--high-match); font-weight: 500; white-space: nowrap;">${s.deadline}</td>
-                    <td><a href="${s.link}" target="_blank" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Link</a></td>
-                </tr>
-            `;
-        });
+        // The Master Sorting Function
+        function applySorting() {
+            const sortSelection = document.getElementById('sort-select').value;
+            
+            const sortLogic = (a, b) => {
+                if (sortSelection === 'match-desc') return b.match - a.match;
+                if (sortSelection === 'deadline-asc') return a.dlTime - b.dlTime;
+                if (sortSelection === 'iot-first') return (b.isIot ? 1 : 0) - (a.isIot ? 1 : 0);
+                if (sortSelection === 'priority-desc') return b.prioScore - a.prioScore;
+                return 0;
+            };
 
-        // 2. Render Scholarship Specific Cards
-        const scholGrid = document.getElementById('schol-grid');
-        scholSpecific.forEach((s, i) => {
-            const isIot = s.field.toLowerCase().includes('iot') || s.field.toLowerCase().includes('embedded') || s.name.toLowerCase().includes('iot');
-            let ringColor = 'var(--accent-cyan)';
-            if (s.match >= 90) ringColor = 'var(--med-match)';
-            if (s.match < 80) ringColor = 'var(--high-match)';
+            uniSpecific.sort(sortLogic);
+            scholSpecific.sort(sortLogic);
 
-            scholGrid.innerHTML += `
-                <div class="card" style="animation-delay: ${i * 0.05}s" data-priority="${s.priority}">
-                    <div class="card-header">
-                        <span class="priority-badge badge-${s.priority}">${s.priority} Match</span>
-                        <div class="match-circle" style="--p: ${s.match}%; background: conic-gradient(${ringColor} var(--p), rgba(255,255,255,0.05) 0);">
-                            <span>${s.match}%</span>
+            renderUniTable();
+            renderScholGrid();
+        }
+
+        function renderUniTable() {
+            const uniTbody = document.getElementById('uni-tbody');
+            uniTbody.innerHTML = '';
+            uniSpecific.forEach(s => {
+                uniTbody.innerHTML += \`
+                    <tr>
+                        <td>
+                            <div style="font-weight: 700; color: #fff; margin-bottom: 4px; font-family:'Outfit' ,sans-serif; font-size: 1.1rem;">\${s.university}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted)">\${s.country}</div>
+                        </td>
+                        <td><span class="priority-badge badge-\${s.priority}">\${s.priority}</span></td>
+                        <td class="\${s.isIot ? 'iot-glow' : ''}" style="font-weight: 600;">\${s.field}</td>
+                        <td>
+                             <div class="match-circle" style="width: 38px; height: 38px; --p: \${s.match}%; background: conic-gradient(var(--accent-yellow) var(--p), rgba(255,255,255,0.05) 0); font-size: 0.8rem;">
+                                <span>\${s.match}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="color: var(--accent-yellow); font-weight: 600; margin-bottom: 4px;">\${s.funding}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted)">Assist: \${s.assistantship}</div>
+                        </td>
+                        <td><div class="raw-text" title="\${s.eligibility}">\${s.eligibility}</div></td>
+                        <td style="color: var(--text-main); font-weight: 600; white-space: nowrap;">\${s.deadline}</td>
+                        <td><a href="\${s.link}" target="_blank" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Visit</a></td>
+                    </tr>
+                \`;
+            });
+        }
+
+        function renderScholGrid() {
+            const scholGrid = document.getElementById('schol-grid');
+            scholGrid.innerHTML = '';
+            scholSpecific.forEach((s, i) => {
+                scholGrid.innerHTML += \`
+                    <div class="card" style="animation-delay: \${i * 0.05}s">
+                        <div class="card-header">
+                            <span class="priority-badge badge-\${s.priority}">\${s.priority} Priority</span>
+                            <div class="match-circle" style="--p: \${s.match}%;">
+                                <span>\${s.match}%</span>
+                            </div>
+                        </div>
+                        <h3 class="card-title">\${s.name}</h3>
+                        <div class="card-uni">🌍 \${s.university}, \${s.country}</div>
+                        <div class="data-row">
+                            <span class="data-label">Field of Study</span>
+                            <span class="data-value \${s.isIot ? 'iot-glow' : ''}">\${s.field}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Funding Type</span>
+                            <span class="data-value" style="color:var(--accent-yellow)">\${s.funding}</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Deadline</span>
+                            <span class="data-value" style="color:#fff">\${s.deadline}</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-secondary" style="flex:1" onclick="openModal('\${s.name.replace(/'/g, "\\'")}')">View Data</button>
+                            <a href="\${s.link}" target="_blank" class="btn btn-primary" style="flex: 1;">Apply ↗</a>
                         </div>
                     </div>
-                    <h3 class="card-title">${s.name}</h3>
-                    <div class="card-uni">🌍 ${s.university}, ${s.country}</div>
-                    <div class="data-row">
-                        <span class="data-label">Field of Study</span>
-                        <span class="data-value ${isIot ? 'iot-glow' : ''}">${s.field}</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="data-label">Funding Type</span>
-                        <span class="data-value" style="color:var(--med-match)">${s.funding}</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="data-label">Status / Deadline</span>
-                        <span class="data-value" style="color:var(--high-match)">${s.deadline}</span>
-                    </div>
-                    <div class="card-actions">
-                        <a href="${s.link}" target="_blank" class="btn-primary" style="display:block; text-align:center; flex:1;">Program Details ↗</a>
-                    </div>
-                </div>
-            `;
-        });
+                \`;
+            });
+        }
 
-        // Tab Switching Logic
         function switchTab(viewId) {
-            // Update Buttons
             document.querySelectorAll('.route-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+            document.getElementById('tab-' + viewId).classList.add('active');
 
-            // Update Views
             document.getElementById('uni-view').classList.remove('active-view');
             document.getElementById('schol-view').classList.remove('active-view');
-            
             document.getElementById(viewId + '-view').classList.add('active-view');
+            currentView = viewId;
         }
+
+        // Modal Logic
+        function openModal(scholarshipName) {
+            const s = scholarships.find(x => x.name === scholarshipName);
+            
+            document.getElementById('modal-title').innerText = s.name;
+            document.getElementById('modal-subtitle').innerText = \`\${s.university}, \${s.country}\`;
+            
+            document.getElementById('modal-badges').innerHTML = \`
+                <span class="priority-badge" style="background:var(--accent-yellow); color:#111; border:none">\${s.priority} Match (\${s.match}%)</span>
+                \${s.isIot ? '<span class="priority-badge" style="background:#111; color:var(--accent-yellow); border:1px solid var(--accent-yellow)">IoT Focused</span>' : ''}
+            \`;
+
+            let ieltsInfo = s.eligibility.toLowerCase().includes('ielts') || s.eligibility.toLowerCase().includes('english') ? 'Required (Check score)' : 'Not mentioned';
+
+            document.getElementById('modal-body').innerHTML = \`
+                <div class="detail-section">
+                    <h4>Overview</h4>
+                    <div class="row-item"><label>Degree Level</label><div>\${s.degree}</div></div>
+                    <div class="row-item"><label>Field of Study</label><div class="\${s.isIot ? 'iot-glow' : ''}">\${s.field}</div></div>
+                    <div class="row-item"><label>Competition</label><div>\${s.competition}</div></div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>Funding Breakdown</h4>
+                    <div class="row-item"><label>Core Funding</label><div style="color:var(--accent-yellow)">\${s.funding}</div></div>
+                    <div class="row-item"><label>Benefits</label><div>\${s.benefits}</div></div>
+                    <div class="row-item"><label>Assistantship Needed</label><div>\${s.assistantship}</div></div>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Application Metrics</h4>
+                    <div class="row-item"><label>Deadline</label><div style="color:#fff">\${s.deadline}</div></div>
+                    <div class="row-item"><label>Eligibility Outline</label><div>\${s.eligibility}</div></div>
+                    <div class="row-item"><label>IELTS/GRE Status</label><div>\${ieltsInfo}</div></div>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Notes & Strategy</h4>
+                    <div class="row-item"><label>Internal Notes</label><div>\${s.notes || 'No custom notes.'}</div></div>
+                    <div class="row-item"><label>Professor Contact</label><div>\${s.assistantship === 'RA' ? 'You MUST email professors early for Labs.' : 'Usually centralized application.'}</div></div>
+                </div>
+            \`;
+
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() { document.getElementById('modal').classList.remove('active'); }
+        document.getElementById('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
+
+        // Initial Load
+        applySorting(); // This will sort (default match-desc) and render both views
+
     </script>
 </body>
 </html>
