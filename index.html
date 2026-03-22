@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholarship Tracker Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="data.js"></script>
+    <style>
+        :root {
+            --bg-dark: #070b19;
+            --glass-bg: rgba(20, 25, 50, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-glow: rgba(139, 92, 246, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --top-match: #ef4444;
+            --high-match: #eab308;
+            --med-match: #22c55e;
+            --low-match: #64748b;
+        }
+
+        body {
+            margin: 0; padding: 0; background: var(--bg-dark);
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253,16%,15%,1) 0, transparent 40%),
+                radial-gradient(at 80% 0%, hsla(225,39%,20%,0.4) 0, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(339,49%,20%,0.4) 0, transparent 50%);
+            background-attachment: fixed; color: var(--text-main); font-family: 'Inter', sans-serif;
+            min-height: 100vh; overflow-x: hidden;
+        }
+
+        header {
+            padding: 2rem 4rem; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--glass-border); background: rgba(7, 11, 25, 0.7);
+            backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif; font-size: 2.2rem; font-weight: 800; margin: 0;
+            background: linear-gradient(135deg, #fff, text-main); -webkit-background-clip: text;
+        }
+        h1 span {
+            background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* Main Route Tabs */
+        .route-tabs {
+            display: flex; gap: 1rem; margin: 3rem 4rem 2rem 4rem; border-bottom: 2px solid rgba(255,255,255,0.05); padding-bottom: 1rem;
+        }
+        .route-btn {
+            background: none; border: none; color: var(--text-muted); font-family: 'Outfit'; font-size: 1.5rem;
+            font-weight: 700; cursor: pointer; transition: all 0.3s ease; padding: 0.5rem 1rem; position: relative;
+        }
+        .route-btn:hover { color: #fff; }
+        .route-btn.active { color: #fff; }
+        .route-btn.active::after {
+            content: ''; position: absolute; bottom: -1rem; left: 0; right: 0; height: 3px;
+            background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple)); border-radius: 3px 3px 0 0;
+        }
+
+        main { padding: 0 4rem 4rem 4rem; }
+
+        /* General UI */
+        .iot-glow { color: #d8b4fe; text-shadow: 0 0 10px rgba(168, 85, 247, 0.6); font-weight: 700; }
+        .priority-badge { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; padding: 0.5rem 1rem; border-radius: 999px; letter-spacing: 0.5px; }
+        .badge-Top { color: #fca5a5; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-High { color: #fde047; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.3); }
+        .badge-Medium { color: #86efac; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); }
+        .badge-Low { color: #cbd5e1; background: rgba(255,255,255, 0.1); border: 1px solid rgba(255,255,255, 0.2); }
+
+        .btn-primary { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 0.9rem;}
+        .btn-primary:hover { box-shadow: 0 0 15px rgba(139, 92, 246, 0.4); transform: translateY(-2px); }
+
+        /* VIEW 1: SCHOLARSHIP SPECIFIC (CARDS) */
+        #schol-view { display: none; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 2.5rem; }
+        .card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 2rem; position: relative;
+            backdrop-filter: blur(16px); transition: all 0.4s ease; display: flex; flex-direction: column;
+        }
+        .card:hover { transform: translateY(-8px); border-color: rgba(255, 255, 255, 0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px var(--glass-glow); }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+        .match-circle {
+            width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            background: conic-gradient(var(--accent-cyan) var(--p), rgba(255,255,255,0.05) 0); position: relative; font-family: 'Outfit'; font-weight:800; font-size: 1.1rem;
+        }
+        .match-circle::before { content: ''; position: absolute; inset: 4px; background: var(--bg-dark); border-radius: 50%; }
+        .match-circle span { position: relative; z-index: 1;}
+        .card-title { font-family: 'Outfit'; font-size: 1.5rem; font-weight: 700; margin: 0 0 0.5rem 0; line-height: 1.3; }
+        .card-uni { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; }
+        .data-row { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        .data-label { color: var(--text-muted); }
+        .data-value { font-weight: 500; text-align: right; max-width: 60%; line-height: 1.4; }
+        .card-actions { margin-top: 1.5rem; display: flex; gap: 1rem; }
+
+        /* VIEW 2: UNIVERSITY SPECIFIC (RAW TABLE) */
+        #uni-view { display: none; }
+        .table-container {
+            width: 100%; overflow-x: auto; background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 16px; backdrop-filter: blur(16px);
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+        th { 
+            background: rgba(0,0,0,0.3); padding: 1.2rem 1.5rem; font-weight: 600; color: var(--text-muted); 
+            text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8rem; border-bottom: 1px solid var(--glass-border);
+            white-space: nowrap;
+        }
+        td { padding: 1.2rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.03); }
+
+        .th-sort { cursor: pointer; }
+        .th-sort:hover { color: #fff; }
+        
+        .raw-text { color: var(--text-muted); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Base State */
+        .active-view { display: block !important; animation: fadeUp 0.4s ease backwards; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Scholarship<span>Finder Pro</span></h1>
+        <div><a href="https://docs.google.com/spreadsheets/d/1ywGs9C0x7RnyGNe6NU5pgvUGfiGIrtW4UiVcuBP81U4/edit" target="_blank" class="btn-primary" style="background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);">Google Sheet ↗</a></div>
+    </header>
+
+    <div class="route-tabs">
+        <button class="route-btn active" onclick="switchTab('uni')">🏛️ University Specific</button>
+        <button class="route-btn" onclick="switchTab('schol')">🏆 Scholarship Specific</button>
+    </div>
+
+    <main>
+        
+        <!-- UNIVERSITY SPECIFIC (RAW DATA TABLE) -->
+        <div id="uni-view" class="active-view">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>University</th>
+                            <th>Priority</th>
+                            <th>Field of Study</th>
+                            <th>Degree</th>
+                            <th>Funding & Assistantship</th>
+                            <th>Eligibility Details</th>
+                            <th>Deadline</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="uni-tbody">
+                        <!-- Table Rows Injected Here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SCHOLARSHIP SPECIFIC (PREMIUM CARDS) -->
+        <div id="schol-view">
+            <div class="grid" id="schol-grid">
+                <!-- Cards Injected Here -->
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Categorize Data
+        let uniSpecific = [];
+        let scholSpecific = [];
+
+        scholarships.forEach(s => {
+            const nameLower = s.name.toLowerCase();
+            const uniLower = s.university.toLowerCase();
+            
+            // Check if it's a major scholarship fund/government/consortium
+            if (uniLower.includes('consortium') || nameLower.includes('erasmus') || nameLower.includes('mext') || 
+                nameLower.includes('gks') || nameLower.includes('fulbright') || nameLower.includes('chevening') || 
+                nameLower.includes('csc') || nameLower.includes('koica') || nameLower.includes('daad') || 
+                nameLower.includes('commonwealth') || nameLower.includes('adb') || nameLower.includes('emai')) {
+                scholSpecific.push(s);
+            } else {
+                uniSpecific.push(s);
+            }
+        });
+
+        // 1. Render University Specific Raw Table
+        const uniTbody = document.getElementById('uni-tbody');
+        uniSpecific.forEach(s => {
+            const isIot = s.field.toLowerCase().includes('iot') || s.field.toLowerCase().includes('embedded') || s.name.toLowerCase().includes('iot');
+            uniTbody.innerHTML += `
+                <tr>
+                    <td>
+                        <div style="font-weight: 600; color: #fff; margin-bottom: 4px;">${s.university}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted)">${s.country}</div>
+                    </td>
+                    <td><span class="priority-badge badge-${s.priority}">${s.priority}</span></td>
+                    <td class="${isIot ? 'iot-glow' : ''}" style="font-weight: 500">${s.field}</td>
+                    <td style="color: var(--text-muted)">${s.degree}</td>
+                    <td>
+                        <div style="color: var(--med-match); font-weight: 600; margin-bottom: 4px;">${s.funding}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted)">Assist: ${s.assistantship}</div>
+                    </td>
+                    <td><div class="raw-text" title="${s.eligibility}">${s.eligibility}</div></td>
+                    <td style="color: var(--high-match); font-weight: 500; white-space: nowrap;">${s.deadline}</td>
+                    <td><a href="${s.link}" target="_blank" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Link</a></td>
+                </tr>
+            `;
+        });
+
+        // 2. Render Scholarship Specific Cards
+        const scholGrid = document.getElementById('schol-grid');
+        scholSpecific.forEach((s, i) => {
+            const isIot = s.field.toLowerCase().includes('iot') || s.field.toLowerCase().includes('embedded') || s.name.toLowerCase().includes('iot');
+            let ringColor = 'var(--accent-cyan)';
+            if (s.match >= 90) ringColor = 'var(--med-match)';
+            if (s.match < 80) ringColor = 'var(--high-match)';
+
+            scholGrid.innerHTML += `
+                <div class="card" style="animation-delay: ${i * 0.05}s" data-priority="${s.priority}">
+                    <div class="card-header">
+                        <span class="priority-badge badge-${s.priority}">${s.priority} Match</span>
+                        <div class="match-circle" style="--p: ${s.match}%; background: conic-gradient(${ringColor} var(--p), rgba(255,255,255,0.05) 0);">
+                            <span>${s.match}%</span>
+                        </div>
+                    </div>
+                    <h3 class="card-title">${s.name}</h3>
+                    <div class="card-uni">🌍 ${s.university}, ${s.country}</div>
+                    <div class="data-row">
+                        <span class="data-label">Field of Study</span>
+                        <span class="data-value ${isIot ? 'iot-glow' : ''}">${s.field}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Funding Type</span>
+                        <span class="data-value" style="color:var(--med-match)">${s.funding}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Status / Deadline</span>
+                        <span class="data-value" style="color:var(--high-match)">${s.deadline}</span>
+                    </div>
+                    <div class="card-actions">
+                        <a href="${s.link}" target="_blank" class="btn-primary" style="display:block; text-align:center; flex:1;">Program Details ↗</a>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Tab Switching Logic
+        function switchTab(viewId) {
+            // Update Buttons
+            document.querySelectorAll('.route-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update Views
+            document.getElementById('uni-view').classList.remove('active-view');
+            document.getElementById('schol-view').classList.remove('active-view');
+            
+            document.getElementById(viewId + '-view').classList.add('active-view');
+        }
+    </script>
+</body>
+</html>
