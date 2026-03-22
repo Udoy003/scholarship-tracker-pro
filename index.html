@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scholarship Tracker Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="data.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         :root {
             /* Nano Banana Theme */
@@ -248,6 +248,57 @@
         let uniSpecific = [];
         let scholSpecific = [];
         let currentView = 'uni'; // Track which view is active
+        const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1ywGs9C0x7RnyGNe6NU5pgvUGfiGIrtW4UiVcuBP81U4/export?format=csv';
+
+        async function initData() {
+            Papa.parse(SHEET_CSV_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    const data = results.data;
+                    data.forEach(row => {
+                        let s = {};
+                        s.name = row['Scholarship/Program Name'] || 'Unknown Program';
+                        s.university = row['University Name'] || 'Unknown University';
+                        s.country = row['Country'] || '';
+                        s.degree = row['Degree Level'] || '';
+                        s.priority = row['Priority'] || 'Low';
+                        s.match = parseInt(row['Program Match (%)']) || 0;
+                        s.field = row['Field of Study / Department'] || '';
+                        s.deadline = row['Application Deadline'] || 'TBD';
+                        s.funding = row['Funding Type'] || '';
+                        s.assistantship = row['Assistantship'] || '';
+                        s.eligibility = row['Eligibility & Requirements'] || '';
+                        s.notes = row['Comment'] || '';
+                        s.link = row['Application Link'] || '#';
+                        s.benefits = row['Benefits Details'] || '';
+                        s.competition = row['Scholarship Competition'] || '';
+
+                        const nameLower = s.name.toLowerCase();
+                        const uniLower = s.university.toLowerCase();
+                        
+                        s.isIot = isIot(s);
+                        s.dlTime = parseDeadline(s.deadline);
+                        s.prioScore = getPriorityScore(s.priority);
+
+                        if (uniLower.includes('consortium') || nameLower.includes('erasmus') || nameLower.includes('mext') || 
+                            nameLower.includes('gks') || nameLower.includes('fulbright') || nameLower.includes('chevening') || 
+                            nameLower.includes('csc') || nameLower.includes('koica') || nameLower.includes('daad') || 
+                            nameLower.includes('commonwealth') || nameLower.includes('adb') || nameLower.includes('emai')) {
+                            s.category = 'schol';
+                            scholSpecific.push(s);
+                        } else {
+                            s.category = 'uni';
+                            uniSpecific.push(s);
+                        }
+                    });
+
+                    // Trigger the render
+                    applySorting();
+                }
+            });
+        }
 
         function isIot(s) {
             return s.field.toLowerCase().includes('iot') || s.field.toLowerCase().includes('embedded') || s.name.toLowerCase().includes('iot');
@@ -271,27 +322,6 @@
             if(p === "Medium") return 1;
             return 0; // Low
         }
-
-        // Initialize Categories
-        scholarships.forEach(s => {
-            const nameLower = s.name.toLowerCase();
-            const uniLower = s.university.toLowerCase();
-            
-            s.isIot = isIot(s);
-            s.dlTime = parseDeadline(s.deadline);
-            s.prioScore = getPriorityScore(s.priority);
-
-            if (uniLower.includes('consortium') || nameLower.includes('erasmus') || nameLower.includes('mext') || 
-                nameLower.includes('gks') || nameLower.includes('fulbright') || nameLower.includes('chevening') || 
-                nameLower.includes('csc') || nameLower.includes('koica') || nameLower.includes('daad') || 
-                nameLower.includes('commonwealth') || nameLower.includes('adb') || nameLower.includes('emai')) {
-                s.category = 'schol';
-                scholSpecific.push(s);
-            } else {
-                s.category = 'uni';
-                uniSpecific.push(s);
-            }
-        });
 
         // The Master Sorting Function
         function applySorting() {
@@ -368,7 +398,7 @@
                             <span class="data-value" style="color:#fff">\${s.deadline}</span>
                         </div>
                         <div class="card-actions">
-                            <button class="btn btn-secondary" style="flex:1" onclick="openModal('\${s.name.replace(/'/g, "\\'")}')">View Data</button>
+                            <button class="btn btn-secondary" style="flex:1" onclick="openModal(\${i}, 'schol')">View Data</button>
                             <a href="\${s.link}" target="_blank" class="btn btn-primary" style="flex: 1;">Apply ↗</a>
                         </div>
                     </div>
@@ -387,8 +417,8 @@
         }
 
         // Modal Logic
-        function openModal(scholarshipName) {
-            const s = scholarships.find(x => x.name === scholarshipName);
+        function openModal(index, category) {
+            const s = category === 'schol' ? scholSpecific[index] : uniSpecific[index];
             
             document.getElementById('modal-title').innerText = s.name;
             document.getElementById('modal-subtitle').innerText = \`\${s.university}, \${s.country}\`;
@@ -436,7 +466,7 @@
         document.getElementById('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
 
         // Initial Load
-        applySorting(); // This will sort (default match-desc) and render both views
+        initData();
 
     </script>
 </body>
